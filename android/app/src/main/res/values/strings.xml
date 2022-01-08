@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">wigiLab App</string>
+    <string name="facebook_app_id">501392971276402</string>
+    <string name="fb_login_protocol_scheme">fb501392971276402</string>
+    <string name="facebook_client_token">5aac33186ad15369a8858755cec80246</string>
+</resources>

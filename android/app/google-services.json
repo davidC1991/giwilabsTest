@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "458854100205",
+    "project_id": "wigilabs-6ffc1",
+    "storage_bucket": "wigilabs-6ffc1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:458854100205:android:de04fd06f8d1b1d16df0e4",
+        "android_client_info": {
+          "package_name": "com.example.wigilabs_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "458854100205-c3socikcgofep02dmktketoqhcjs99gj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcHZUxUrB0mAsPuaDAuQ6euV3TxrYaph4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "458854100205-c3socikcgofep02dmktketoqhcjs99gj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
