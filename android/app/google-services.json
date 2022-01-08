@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "458854100205-qoc3dljtbmb3vncqq9gtta0gr969u9dd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.wigilabs_app",
+            "certificate_hash": "0489e5382c230ac824464dbd29d9f0b9a90ccebe"
+          }
+        },
+        {
           "client_id": "458854100205-c3socikcgofep02dmktketoqhcjs99gj.apps.googleusercontent.com",
           "client_type": 3
         }
