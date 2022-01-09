@@ -16,11 +16,13 @@ class TextoCustomedWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: this.padding,
-      child: SelectableText(
+      child: Text(
         this.text!,
-        style: TextStyle(color: this.color, fontSize: this.size, fontWeight: this.font),  
+        style: TextStyle(color: this.color, fontSize: this.size, fontWeight: this.font,),  
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center
       ),
     );
-   
   }
 }
+   

@@ -1,23 +1,38 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wigilabs_app/bloc/spotify_bloc/spotify_bloc.dart';
+
+import 'package:wigilabs_app/bloc/user/user_bloc.dart';
+import 'package:wigilabs_app/models/apiWigiLab_model.dart';
 import 'package:wigilabs_app/pages/home_Page.dart';
+import 'package:wigilabs_app/services/dataApiWigiLabs_service.dart';
 import 'package:wigilabs_app/services/singIn_service.dart';
+import 'package:wigilabs_app/services/spotify_service.dart';
 import 'package:wigilabs_app/widgets/widgets.dart';
+import 'package:wigilabs_app/models/user_model.dart' as userModel;
+
 
 class LoginPage extends StatelessWidget {
  
   final SingInService singInService = SingInService();
+  final dataUserWigiLab = DataUserWigiLab();
+  final SpotifyServices spotifyServices = SpotifyServices();
   
   @override
   Widget build(BuildContext context) {
-    final size  =  MediaQuery.of(context).size;
-    //print(this.singInService.user?.uid);
-    
-    
-    return this.singInService.user?.uid != null?HomePage():signInPageWidget(size,context);
+
+    final size     =  MediaQuery.of(context).size;
+    final userBloc =  BlocProvider.of<UserBloc>(context);
+
+    return BlocBuilder<UserBloc,UserState>(
+      builder: ( _ , state)=>state.isUserAuthed?HomePage():signInPageWidget(size,context,userBloc)
+    );
+      
+    //return this.singInService.user?.uid != null?HomePage():signInPageWidget(size,context);
   }
 
-  Scaffold signInPageWidget(Size size, BuildContext context) {
+  Scaffold signInPageWidget(Size size, BuildContext context, UserBloc userBloc) {
     return Scaffold(
      body:SingleChildScrollView(
      child: Column(
@@ -28,8 +43,8 @@ class LoginPage extends StatelessWidget {
          inputUser(size),
          inputPassword(size),
          singInButtonMail(size),
-         singInButtonOtherAccounts(size,true,context),
-         singInButtonOtherAccounts(size,false,context),
+         singInButtonOtherAccounts(size,true,context,userBloc),
+         singInButtonOtherAccounts(size,false,context,userBloc),
        ],
      ),
    )
@@ -104,14 +119,21 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Widget singInButtonOtherAccounts(Size size, bool isLogginFacebook, BuildContext context){
+  Widget singInButtonOtherAccounts(Size size, bool isLogginFacebook, BuildContext context, UserBloc userBloc){
+    final SpotifyBloc spotifyBloc = BlocProvider.of<SpotifyBloc>(context);
     return GestureDetector(
       onTap: ()async{
         
         final User? isAuth =  isLogginFacebook?await signInFb(): await signInGoogle();
-        print('mm');
-        //print(isAuth!.uid);
+        
+
         if (isAuth!.uid != null){
+          final userModel.User newUser = userModel.User(name: isAuth.displayName!, email: isAuth.email! );
+          userBloc.add( AuthenticateUser(newUser));
+          final Usuario userWigiLab = await getDataFromApiWigiLab();
+          userBloc.add( FetchDataWigiLab(userWigiLab,newUser));
+          final resp = await spotifyServices.getCategories();
+          spotifyBloc.add(Fetchcategories(resp));
           Navigator.pushNamed(context, 'home');
         }
       },
@@ -134,5 +156,8 @@ class LoginPage extends StatelessWidget {
   }
   signInFb() async {
     return await singInService.singInFirebaseFb();
+  }
+  getDataFromApiWigiLab() async {
+    return await dataUserWigiLab.getDataFromApiWigiLabs();
   }
 }

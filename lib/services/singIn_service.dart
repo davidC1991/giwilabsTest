@@ -78,12 +78,6 @@ class SingInService {
          return userCredential.user!;
       }
 
-     
-
-     
-      //print(userCredential.user);
-     
-
     } on FirebaseAuthException catch (e) {
       print(e);
     }
