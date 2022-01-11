@@ -50,7 +50,7 @@ class SignUpPage extends StatelessWidget {
 
    buttonSignIn(UserBloc userBloc, BuildContext context) {
     return TextButton(
-      onPressed: () => Navigator.pushReplacementNamed(context, 'login'),
+      onPressed: () => Navigator.pushReplacementNamed(context, 'loggin'),
       child: Text('Sign In')
     );
   }

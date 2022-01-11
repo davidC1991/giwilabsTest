@@ -16,12 +16,12 @@ import 'package:wigilabs_app/models/user_model.dart' as userModel;
 
 
 class LoginPage extends StatelessWidget {
-  TextEditingController emailController    = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController    = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   final SingInService singInService = SingInService();
   final dataUserWigiLab = DataUserWigiLab();
   final SpotifyServices spotifyServices = SpotifyServices();
-  PreferenciasUsuario  prefs = new PreferenciasUsuario();
+  final PreferenciasUsuario  prefs = new PreferenciasUsuario();
 
   
   @override
@@ -45,14 +45,7 @@ class LoginPage extends StatelessWidget {
 
     return BlocBuilder<UserBloc,UserState>(
       builder: ( _ , state) {
-        print('xxxxxxxxxxxxxxxxxx');
         if(prefs.isUserOK=='userOk'){
-           
-          //  final userModel.User newUser = userModel.User(name: prefs.nameAuthSocialNetwork!, email: prefs.mailAuthSocialNetwork! );
-          //  final Usuario? userWigiLab = Usuario(nombre: prefs.nameAuthWigilab, apellido: prefs.surnameAuthWigilab,userProfileId: prefs.mailAuthWigilab,documentNumber: prefs.idAuthWigilab);
-          //  userBloc.add( AuthenticateUser(newUser));
-          //  userBloc.add( FetchDataWigiLab(userWigiLab,newUser));
-          //  spotifyBloc.add(Fetchcategories('CO'));
            return HomePage();
         }else if (state.isUserAuthed!){
            prefs.setUser = 'userOk';
@@ -66,7 +59,7 @@ class LoginPage extends StatelessWidget {
   }
       
       
-    //return this.singInService.user?.uid != null?HomePage():signInPageWidget(size,context);
+    
 
   Scaffold signInPageWidget(Size size, BuildContext context, UserBloc userBloc) {
     return Scaffold(

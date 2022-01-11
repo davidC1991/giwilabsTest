@@ -11,7 +11,7 @@ import 'package:wigilabs_app/widgets/widgets.dart';
 
 class HomePage extends StatelessWidget {
 
-  PreferenciasUsuario  prefs = new PreferenciasUsuario();
+  final PreferenciasUsuario  prefs = new PreferenciasUsuario();
   
   @override
   Widget build(BuildContext context) {
@@ -87,10 +87,10 @@ class HomePage extends StatelessWidget {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              isUserWigiLab?(user.userWigiLab)==null?Container(child: Text('Error 1 from Server'),):Text('Name: ${user.userWigiLab!.nombre!}'):Text('Name: $nombre'),
-              isUserWigiLab?user.userWigiLab==null?Container(child: Text('Error 1 from Server'),):Text('Surname: ${user.userWigiLab!.apellido!}'):Text('Surname: $apellido'),
-              isUserWigiLab?user.userWigiLab==null?Container(child: Text('Error 1 from Server'),):Text('Mail: ${user.userWigiLab!.userProfileId!}'):user.userModel?.email ==null?Text('Mail: ${user.email}'): Text('Mail: ${user.userModel!.email}'),
-              isUserWigiLab?user.userWigiLab==null?Container(child: Text('Error 1 from Server'),):Text('Id Card: ${user.userWigiLab!.documentNumber!}'):Text(''),
+              isUserWigiLab?(user.userWigiLab)==null?Container(child: Text('Name:'),):Text('Name: ${user.userWigiLab!.nombre!}'):Text('Name: $nombre'),
+              isUserWigiLab?user.userWigiLab==null?Container(child: Text('Surname:'),):Text('Surname: ${user.userWigiLab!.apellido!}'):Text('Surname: $apellido'),
+              isUserWigiLab?user.userWigiLab==null?Container(child: Text('Mail:'),):Text('Mail: ${user.userWigiLab!.userProfileId!}'):user.userModel?.email ==null?Text('Mail: ${user.email}'): Text('Mail: ${user.userModel!.email}'),
+              isUserWigiLab?user.userWigiLab==null?Container(child: Text('Id Card:'),):Text('Id Card: ${user.userWigiLab!.documentNumber!}'):Text(''),
              
             ],
           ),
