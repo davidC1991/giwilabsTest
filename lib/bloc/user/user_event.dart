@@ -14,4 +14,20 @@ class FetchDataWigiLab extends UserEvent{
   FetchDataWigiLab(this.wigilabUser,this.user);
 }
 
+class SignUPWithEmail extends UserEvent{
+  final String? password;
+  final String? email;
+  final String? name;
+  final String? surname;
+  final bool? isRegisteredEmail;
+
+  SignUPWithEmail({this.password, this.email, this.name, this.surname,this.isRegisteredEmail = false});
+}
+
+class UserRegisteredEmail extends UserEvent{
+  final bool userRegistered;
+  UserRegisteredEmail(this.userRegistered);
+}
+
+class ResetUser extends UserEvent{}
 

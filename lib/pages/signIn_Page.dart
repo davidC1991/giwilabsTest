@@ -4,8 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wigilabs_app/bloc/spotify_bloc/spotify_bloc.dart';
 
 import 'package:wigilabs_app/bloc/user/user_bloc.dart';
+import 'package:wigilabs_app/helpers/alertasRapidas.dart';
 import 'package:wigilabs_app/models/apiWigiLab_model.dart';
 import 'package:wigilabs_app/pages/home_Page.dart';
+import 'package:wigilabs_app/preferences/preferencias_usuarios.dart';
 import 'package:wigilabs_app/services/dataApiWigiLabs_service.dart';
 import 'package:wigilabs_app/services/singIn_service.dart';
 import 'package:wigilabs_app/services/spotify_service.dart';
@@ -14,19 +16,52 @@ import 'package:wigilabs_app/models/user_model.dart' as userModel;
 
 
 class LoginPage extends StatelessWidget {
- 
+  TextEditingController emailController    = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   final SingInService singInService = SingInService();
   final dataUserWigiLab = DataUserWigiLab();
   final SpotifyServices spotifyServices = SpotifyServices();
+  PreferenciasUsuario  prefs = new PreferenciasUsuario();
+
   
   @override
   Widget build(BuildContext context) {
-
+    print(prefs.isUserOK);
+    //prefs.setUser = '';
     final size     =  MediaQuery.of(context).size;
     final userBloc =  BlocProvider.of<UserBloc>(context, listen: false);
-  
+    final SpotifyBloc spotifyBloc = BlocProvider.of<SpotifyBloc>(context, listen: false);
+    print('incio pagina sign in');
+     if(prefs.isUserOK=='userOk'){
+           
+           final userModel.User newUser = userModel.User(name: prefs.nameAuthSocialNetwork!, email: prefs.mailAuthSocialNetwork! );
+           final Usuario? userWigiLab = Usuario(nombre: prefs.nameAuthWigilab, apellido: prefs.surnameAuthWigilab,userProfileId: prefs.mailAuthWigilab,documentNumber: prefs.idAuthWigilab);
+           userBloc.add( AuthenticateUser(newUser));
+           userBloc.add( FetchDataWigiLab(userWigiLab,newUser));
+           spotifyBloc.add(Fetchcategories('CO'));
+           return HomePage();
+        }
+
+
     return BlocBuilder<UserBloc,UserState>(
-      builder: ( _ , state)=>state.isUserAuthed?HomePage():signInPageWidget(size,context,userBloc)
+      builder: ( _ , state) {
+        print('xxxxxxxxxxxxxxxxxx');
+        if(prefs.isUserOK=='userOk'){
+           
+          //  final userModel.User newUser = userModel.User(name: prefs.nameAuthSocialNetwork!, email: prefs.mailAuthSocialNetwork! );
+          //  final Usuario? userWigiLab = Usuario(nombre: prefs.nameAuthWigilab, apellido: prefs.surnameAuthWigilab,userProfileId: prefs.mailAuthWigilab,documentNumber: prefs.idAuthWigilab);
+          //  userBloc.add( AuthenticateUser(newUser));
+          //  userBloc.add( FetchDataWigiLab(userWigiLab,newUser));
+          //  spotifyBloc.add(Fetchcategories('CO'));
+           return HomePage();
+        }else if (state.isUserAuthed!){
+           prefs.setUser = 'userOk';
+           return HomePage();
+        } else{
+          return signInPageWidget(size,context,userBloc);
+        }  
+
+     }                    
     );
   }
       
@@ -38,18 +73,32 @@ class LoginPage extends StatelessWidget {
      body:SingleChildScrollView(
      child: Column(
        children: [
-         
          titleApp(size),
          signInTitle(size),
-         inputUser(size),
-         inputPassword(size),
-         singInButtonMail(size),
+         inputUser(size, userBloc),
+         inputPassword(size, userBloc),
+         buttonsRegisterAndSignIn(size, context, userBloc),
          singInButtonOtherAccounts(size,true,context,userBloc),
          singInButtonOtherAccounts(size,false,context,userBloc),
        ],
      ),
    )
   );
+  }
+
+  Container buttonsRegisterAndSignIn(Size size, BuildContext context, UserBloc userBloc) {
+    return Container(
+          padding: EdgeInsets.only(top: 0),
+          alignment: Alignment.center,
+          width: size.width * 0.4,
+          child: Row(
+            children: [
+              singInButtonMail(context,userBloc),
+              SizedBox(width: 10,),
+              buttonSignUp(context, userBloc),
+            ],
+          ),
+        );
   }
          
 
@@ -68,31 +117,44 @@ class LoginPage extends StatelessWidget {
        );
   }
          
+  buttonSignUp(BuildContext context, UserBloc userBloc) {
+    return TextButton(
+      onPressed: () {
+        userBloc.add(SignUPWithEmail(email: ''));
+        userBloc.add(SignUPWithEmail(password: ''));
+        Navigator.pushReplacementNamed(context, 'signUp');
+      },
+      child: Text('Sign Up')
+    );
+  }
 
-  Container inputUser(Size size) {
+  Container inputUser(Size size, UserBloc userBloc) {
     return Container(
          margin: EdgeInsets.only(bottom: size.height * 0.01),
          width: size.width * 0.8,
          height: size.height * 0.08,
          //color: Colors.blue,
-         child: formMethodLoggin(true),
+         child: formMethodLoggin(userBloc, emailController,isUserInput:true),
        );
   }
 
-  Container inputPassword(Size size) {
+  Container inputPassword(Size size,UserBloc userBloc) {
     return Container(
          margin: EdgeInsets.only(bottom: size.height * 0.03),
          width: size.width * 0.8,
          height: size.height * 0.08,
-         child: formMethodLoggin(false),
+         child: formMethodLoggin(userBloc,passwordController,isUserInput:false),
        );
   }
 
-  TextFormField formMethodLoggin( bool isUserInput) {
+  TextFormField formMethodLoggin(UserBloc userBloc,TextEditingController controller, {bool isUserInput = true}) {
     return TextFormField(
+          controller: controller,
           autofocus: false,
           obscureText: isUserInput?false:true,
           onChanged: (value){
+             if(isUserInput) userBloc.add(SignUPWithEmail(email: value));
+             if(!isUserInput) userBloc.add(SignUPWithEmail(password: value));
           },
           validator: ( value ){
             if ( value == null ) return 'this field is required';
@@ -101,7 +163,7 @@ class LoginPage extends StatelessWidget {
           autovalidateMode:  AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
              hintText: isUserInput?'Mail or User Name':'Password',
-             labelText:isUserInput?'User Name':'´Password',
+             labelText:isUserInput?'User Name':'Password',
              suffixIcon:  isUserInput?Icon(Icons.group_outlined):Icon(Icons.password),
              border: OutlineInputBorder(
                 borderRadius: BorderRadius.only(
@@ -113,30 +175,36 @@ class LoginPage extends StatelessWidget {
         );
   }
 
-  Widget singInButtonMail(Size size){
+  Widget singInButtonMail(BuildContext context, UserBloc userBloc){
     return ElevatedButton(
-      onPressed: ()=>singInService.singInFirebaseMail('david@hotmail.es','123456'),
+      onPressed: ()async{
+         if(userBloc.state.email!= null && userBloc.state.password != null){
+         Map<String, dynamic> resp = await singInService.singInFirebaseMail(userBloc.state.email!,userBloc.state.password!);
+         if (resp['ok']){
+               emailController.clear();
+               passwordController.clear();
+               FocusScope.of(context).unfocus();
+               mensajePantalla('Successful Loggin');
+               await getData(userBloc, context);
+               Navigator.pushReplacementNamed(context, 'home');
+            }else{
+               FocusScope.of(context).unfocus();
+               mensajePantalla(resp['message']);
+            }
+         }   
+      },
       child: Text('Sing In')
     );
   }
-
+  
   Widget singInButtonOtherAccounts(Size size, bool isLogginFacebook, BuildContext context, UserBloc userBloc){
-    final SpotifyBloc spotifyBloc = BlocProvider.of<SpotifyBloc>(context);
+   
     return GestureDetector(
       onTap: ()async{
         
         final User? isAuth =  isLogginFacebook?await signInFb(): await signInGoogle();
-        
-
-        // ignore: unnecessary_null_comparison
-        if (isAuth!.uid != null){
-          final userModel.User newUser = userModel.User(name: isAuth.displayName!, email: isAuth.email! );
-          userBloc.add( AuthenticateUser(newUser));
-          final Usuario? userWigiLab = await getDataFromApiWigiLab();
-          userBloc.add( FetchDataWigiLab(userWigiLab,newUser));
-          spotifyBloc.add(Fetchcategories('CO'));
+          await getData(userBloc, context, isAuth: isAuth);
           Navigator.pushReplacementNamed(context, 'home');
-        }
       },
       child: Container(
       margin: EdgeInsets.only(top: 25),  
@@ -152,6 +220,38 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
+
+  getData(UserBloc userBloc, BuildContext context, {User? isAuth})async{
+    final SpotifyBloc spotifyBloc = BlocProvider.of<SpotifyBloc>(context, listen:false);
+    if (isAuth !=null ){
+      final userModel.User newUser = userModel.User(name: isAuth.displayName!, email: isAuth.email! );
+      final Usuario? userWigiLab = await getDataFromApiWigiLab();
+      
+      prefs.setIdAuthWigilab          = userWigiLab!.documentNumber!;
+      prefs.setMailAuthWigilab        = userWigiLab.userProfileId!;
+      prefs.setNameAuthWigilab        = userWigiLab.nombre!;
+      prefs.setsurnameAuthWigilab     = userWigiLab.apellido!;
+      prefs.setMailAuthSocialNetwork  = isAuth.email!;
+      prefs.setNameAuthSocialNetwork  = isAuth.displayName!;
+      userBloc.add( AuthenticateUser(newUser));
+      userBloc.add( FetchDataWigiLab(userWigiLab,newUser));
+      spotifyBloc.add(Fetchcategories('CO'));
+     
+       
+    }else{
+      final userModel.User newUser = userModel.User(name:'Not Name',email: userBloc.state.email! );
+      final Usuario? userWigiLab = await getDataFromApiWigiLab();
+      userBloc.add( FetchDataWigiLab(userWigiLab,newUser));
+      spotifyBloc.add(Fetchcategories('CO'));
+      prefs.setIdAuthWigilab          = userWigiLab!.documentNumber!;
+      prefs.setMailAuthWigilab        = userWigiLab.userProfileId!;
+      prefs.setNameAuthWigilab        = userWigiLab.nombre!;
+      prefs.setsurnameAuthWigilab     = userWigiLab.apellido!;
+      prefs.setMailAuthSocialNetwork  = userBloc.state.email!;
+      prefs.setNameAuthSocialNetwork  = 'Not Name';
+    }
+  }
+
   signInGoogle() async {
     return await singInService.singInFirebaseGoogle();
   }

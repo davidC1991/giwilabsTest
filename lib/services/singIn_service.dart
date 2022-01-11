@@ -4,17 +4,48 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:wigilabs_app/models/signInMail_model.dart';
 
 class SingInService {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FacebookAuth _facebookSignIn = FacebookAuth.instance;
+  final String _firebaseToken = 'AIzaSyCcHZUxUrB0mAsPuaDAuQ6euV3TxrYaph4';
+
+   Future <Map <String, dynamic>> singUpFirebaseMail(String email, String password) async {
+
+    final authData = {
+      'email'             : email,
+      'password'          : password,
+      'returnSecureToken' : true,
+
+    };
+    
+    var url_2 = Uri.parse('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$_firebaseToken');
+    final resp = await http.post(
+      url_2,
+      body: json.encode(authData)
+    );
+      
+
+   Map<String, dynamic> decodeResp = json.decode(resp.body);
+
   
-  singInFirebaseMail(String email, String password)async{
-   ResponseSingInMail detailsComicResponse;
-    // add package http in pubspec
-    final String _firebaseToken = 'AIzaSyCcHZUxUrB0mAsPuaDAuQ6euV3TxrYaph4';
+    print(decodeResp);
+    if (decodeResp.containsKey('localId')){
+      //_prefs.token = decodeResp['localId'];
+      //Todo: salvar el token en el storage
+      return {'ok': true , 'token' : decodeResp['localId']};
+    }else {
+      return {'ok' : false, 'message' : decodeResp['error']['message']};
+    }
+    
+  }
+
+
+  Future <Map <String, dynamic>> singInFirebaseMail(String email, String password)async{
+ 
+  
+    
 
     final authData = {
          'email'    : email,
@@ -26,19 +57,12 @@ class SingInService {
       url_2,
       body: json.encode(authData)
     );
-    //Map<String, dynamic> decodeResp = json.decode(resp.body);
-    //here you must set up the model to the response and using de right fromJson Class
-    //print(resp.body);
-    try {
-      detailsComicResponse = ResponseSingInMail.fromJson2(resp.body);
-      print('aqui-error');
-      print(detailsComicResponse.error!.code);
-    } catch (e) {
-      detailsComicResponse = ResponseSingInMail.fromJson(resp.body);
-      print(detailsComicResponse.email);
-      print('aqui1');
-    }
-      
+    Map<String, dynamic> decodeResp = json.decode(resp.body);
+    if (decodeResp.containsKey('localId')){
+        return {'ok': true , 'token' : decodeResp['localId']};
+    }else {
+        return {'ok' : false, 'message' : decodeResp['error']['message']};
+    }  
       
   }
 
@@ -57,7 +81,7 @@ class SingInService {
       );
 
       final userCredential = await _auth.signInWithCredential(oAuthCredential);
-      //print(userCredential.user);
+      
       return userCredential.user!;
 
     } on FirebaseAuthException catch (e) {
