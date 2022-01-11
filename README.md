@@ -11,6 +11,6 @@ Requerimientos
   <img src="artista2.jpeg" width="350" title="hover text">
   <img src="login.jpeg" width="350" alt="accessibility text">
   <img src="registro.jpeg" width="350" alt="accessibility text">
-  <img src="son.jpeg" width="350" alt="accessibility text">
+  <img src="song.jpeg" width="350" alt="accessibility text">
   
 </p>
