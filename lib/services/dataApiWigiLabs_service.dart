@@ -32,11 +32,15 @@ class DataUserWigiLab{
         headers: headers,
         body: json.encode(authData)
     );
-    
-    final responseApiWigiLab = ResponseApiWigiLab.fromJson(resp.body);
-    if (responseApiWigiLab.error == 0){
-      print(responseApiWigiLab.response!.usuario!.documentNumber!);
-      return responseApiWigiLab.response!.usuario!;
+    print(resp);
+    try {
+      final responseApiWigiLab = ResponseApiWigiLab.fromJson(resp.body);
+      if (responseApiWigiLab.error == 0){
+        print(responseApiWigiLab.response!.usuario!.documentNumber!);
+        return responseApiWigiLab.response!.usuario!;
+      }
+    } catch (e) {
+      return null;   
     }
 
     return null;

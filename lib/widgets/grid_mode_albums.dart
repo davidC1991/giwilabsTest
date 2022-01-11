@@ -1,25 +1,27 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotify/spotify.dart';
+import 'package:wigilabs_app/bloc/spotify_bloc/spotify_bloc.dart';
 import 'package:wigilabs_app/widgets/texto.dart';
 
 
 
 
-class GridMode extends StatelessWidget {
+class GridModealbum extends StatelessWidget {
 
-  final List<Category>? categories;
-  const GridMode({this.categories});
-
+  final List<Album>? albums;
+  GridModealbum({this.albums});
+  
 
   @override
   Widget build(BuildContext context) {
-   
-  
-    return  this.categories!.isEmpty?CircularProgressIndicator():GridView.builder(
+    final SpotifyBloc spotifyBloc = BlocProvider.of<SpotifyBloc>(context, listen: true);
+ 
+    return  this.albums==null?CircularProgressIndicator():GridView.builder(
         //reverse: true,
-        itemCount: categories!.length,
+        itemCount: albums!.length,
         shrinkWrap: true,
         physics: ScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -31,15 +33,16 @@ class GridMode extends StatelessWidget {
         ),
         itemBuilder: (BuildContext context, int i){
           //print(comics[i].apiDetailUrl);
-          //print(this.categories);
-          return comicimage(categories![i],context);
+          //print(this.albumss);
+          return albumsImage(albums![i],context,spotifyBloc,);
         },);
   }
   
 
   
-  Widget comicimage(Category categorie, BuildContext context){
+  Widget albumsImage(Album album, BuildContext context, SpotifyBloc spotifyBloc){
     final size = MediaQuery.of(context).size;
+   
     return Container(
       width: size.width*0.25,
       height: size.height*0.05,
@@ -48,14 +51,19 @@ class GridMode extends StatelessWidget {
         mainAxisAlignment  : MainAxisAlignment.center,
         children: [
           GestureDetector(
-            onTap: () {
-              //Navigator.pushNamed(context, 'details', arguments: comic.apiDetailUrl);
+            onTap: () async {
+              print('aca');
+              // spotifyBloc.add(CleanPlayList());
+              // spotifyBloc.add(FetchPlayListByCategorie(album));
+              // Navigator.pushNamed(context, 'playList');
+            
+               
             },
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: FadeInImage(
                 placeholder: AssetImage('assets/loading.gif'),
-                image: NetworkImage(categorie.icons![0].url as String),
+                image: NetworkImage(album.images![0].url!),
                 width: size.width*0.23,
                 height:size.height*0.2,
                 fit: BoxFit.fill,
@@ -63,13 +71,13 @@ class GridMode extends StatelessWidget {
             ),
           ),
           SizedBox(height: size.height*0.01),
-          categorie.name!=null?
+          album.name!=null?
                 Expanded(
                   child: Column(
                     children: [
                       Container(
                         alignment: Alignment.topCenter,
-                        child:TextoCustomedWidget(text:categorie.name!,size: 10.0, color:Colors.black,font: FontWeight.w800),
+                        child:TextoCustomedWidget(text:album.name!,size: 10.0, color:Colors.white,font: FontWeight.w800),
                       ),
                       //Text( date, style: Theme.of(context).textTheme.headline2,maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,)
                     ],
@@ -78,7 +86,7 @@ class GridMode extends StatelessWidget {
                   children: [
                     Container(
                       alignment: Alignment.topCenter,
-                      child: TextoCustomedWidget(text:'No Name',size: 10.0, color:Colors.black,font: FontWeight.w100),
+                      child: TextoCustomedWidget(text:'No Name',size: 10.0, color:Colors.white,font: FontWeight.w100),
                       //child: Text('Not Name', style: Theme.of(context).textTheme.headline1, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center)
                     ),
                     //Text( date, style: Theme.of(context).textTheme.headline2,maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,)
@@ -89,6 +97,10 @@ class GridMode extends StatelessWidget {
           );
         }
       }
+                   
+                 
+                  
+                  
                         
          
                

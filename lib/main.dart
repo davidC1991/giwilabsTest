@@ -22,6 +22,12 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: ( _ ) => SpotifyBloc()),
       ],
       child: MaterialApp(
+        theme: ThemeData.dark().copyWith(
+          scaffoldBackgroundColor: Colors.black,
+          indicatorColor:Colors.white,
+         
+        ),
+        debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         initialRoute: 'login',
         routes: appRoutes

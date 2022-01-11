@@ -9,7 +9,7 @@ class AuthenticateUser extends UserEvent{
 }
 
 class FetchDataWigiLab extends UserEvent{
-  final Usuario wigilabUser;
+  final Usuario? wigilabUser;
   final User user;
   FetchDataWigiLab(this.wigilabUser,this.user);
 }

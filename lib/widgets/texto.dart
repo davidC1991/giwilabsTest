@@ -8,8 +8,8 @@ class TextoCustomedWidget extends StatelessWidget {
  Color? color;
  FontWeight? font;
  EdgeInsetsGeometry padding;
-
- TextoCustomedWidget({required this.text,required this.size, required this.color,this.padding = EdgeInsets.zero, this.font = FontWeight.w300});
+ TextAlign align;
+ TextoCustomedWidget({required this.text,required this.size, required this.color,this.padding = EdgeInsets.zero, this.font = FontWeight.w300, this.align = TextAlign.center});
  
  
   @override
@@ -20,7 +20,7 @@ class TextoCustomedWidget extends StatelessWidget {
         this.text!,
         style: TextStyle(color: this.color, fontSize: this.size, fontWeight: this.font,),  
         overflow: TextOverflow.ellipsis,
-        textAlign: TextAlign.center
+        textAlign: this.align
       ),
     );
   }

@@ -23,14 +23,15 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final size     =  MediaQuery.of(context).size;
-    final userBloc =  BlocProvider.of<UserBloc>(context);
-
+    final userBloc =  BlocProvider.of<UserBloc>(context, listen: false);
+  
     return BlocBuilder<UserBloc,UserState>(
       builder: ( _ , state)=>state.isUserAuthed?HomePage():signInPageWidget(size,context,userBloc)
     );
+  }
+      
       
     //return this.singInService.user?.uid != null?HomePage():signInPageWidget(size,context);
-  }
 
   Scaffold signInPageWidget(Size size, BuildContext context, UserBloc userBloc) {
     return Scaffold(
@@ -63,7 +64,7 @@ class LoginPage extends StatelessWidget {
          margin: EdgeInsets.only(bottom: size.height * 0.04),
          width: size.width * 1,
          height: size.height * 0.4,
-         child: TextoCustomedWidget(text:'WigiLabs Test App',size: 40.0, color:Colors.black,font: FontWeight.w100),
+         child: TextoCustomedWidget(text:'WigiLabs Test App',size: 40.0, color:Colors.white,font: FontWeight.w100),
        );
   }
          
@@ -127,14 +128,14 @@ class LoginPage extends StatelessWidget {
         final User? isAuth =  isLogginFacebook?await signInFb(): await signInGoogle();
         
 
+        // ignore: unnecessary_null_comparison
         if (isAuth!.uid != null){
           final userModel.User newUser = userModel.User(name: isAuth.displayName!, email: isAuth.email! );
           userBloc.add( AuthenticateUser(newUser));
-          final Usuario userWigiLab = await getDataFromApiWigiLab();
+          final Usuario? userWigiLab = await getDataFromApiWigiLab();
           userBloc.add( FetchDataWigiLab(userWigiLab,newUser));
-          final resp = await spotifyServices.getCategories();
-          spotifyBloc.add(Fetchcategories(resp));
-          Navigator.pushNamed(context, 'home');
+          spotifyBloc.add(Fetchcategories('CO'));
+          Navigator.pushReplacementNamed(context, 'home');
         }
       },
       child: Container(
